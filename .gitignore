@@ -1,3 +1,4 @@
 node_modules
 .env
-npm-dubugger.log
+npm-dubug.log
+local_data
