@@ -46,6 +46,10 @@ app.use('/new', function(req, res){
   })           
 });
 
+app.get('/', function(req, res){
+  res.send('URL SHORTENER Microservice')
+})
+
 app.use('/:id', function(req, res){
   
   mongo.connect(process.env.MONGOLAB_URI, function(err, db){
