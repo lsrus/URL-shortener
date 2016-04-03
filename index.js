@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 var mongo = require('mongodb').MongoClient;
 var new_id;
-var http = require('http');
+var url = require('url');
 
 mongo.connect(process.env.MONGOLAB_URI, function(err, db) {
   if(err) {
@@ -20,30 +20,30 @@ mongo.connect(process.env.MONGOLAB_URI, function(err, db) {
 
 app.use('/new', function(req, res){
 
-  var url =  req.path.substring(1)
-  http.get(url, function(response){
+  var uri =  req.path.substring(1)
+  var parsedUrl = url.parse(uri)
+  if(parsedUrl.protocol && parsedUrl.hostname){
   
     mongo.connect(process.env.MONGOLAB_URI, function(err, db) {
       if(err) {
         res.send('Sorry, there was an error connecting to the database');
       } else {
           var id = new_id();
-          var url =  req.path.substring(1)
-          db.collection('urls').insert([{'uri': url,
+          db.collection('urls').insert([{'uri': uri,
                         'unique': id}], 
                         function(err, result){
                             db.close();
                             res.send({ 
                               'id': id,
-                              'url': url
+                              'url': uri
                             })
                         
                          });
       }   
       })
-  }).on('error', function(e) {
+  } else {
     res.send({'error' : 'Invalid URL'})
-  })           
+  }           
 });
 
 app.get('/', function(req, res){
